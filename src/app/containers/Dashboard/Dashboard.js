@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Container from "@material-ui/core/Container";
@@ -12,10 +13,11 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
+import { connect } from 'react-redux';
+import { fetchTasks } from '../../actions/tasksActions';
 
 const Dashboard = (props) => {
     const classes = useStyles();
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
     const [colors, setColors] = useState({
         all_color: 'primary',
@@ -57,11 +59,20 @@ const Dashboard = (props) => {
     };
 
     const viewDetails = (evt, rowData) => {
-        console.log('props '+JSON.stringify(props));
-        console.log('rowdata '+JSON.stringify(rowData));
-
-        props.history.push(`${props.match.path}/${rowData.tableData.id}`)
+        props.history.push(`/${rowData.tableData.id}`);
     };
+
+    useEffect(()=> {
+        props.fetchTasks();
+    });
+    
+    useEffect(() =>{
+        console.log('props '+JSON.stringify(props.newTask))
+        if(props.newTask){
+            props.tasks.unshift(props.newTask);
+        }
+    },[props.newTask]);
+
 
     return (
         <Container maxWidth="lg" className={classes.container}>
@@ -83,14 +94,15 @@ const Dashboard = (props) => {
                                     {title: 'Date', field: 'date'},
                                     {title: 'Status', field: 'status'}
                                 ]}
-                                data={[
-                                    {task: 'Coding', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
-                                    {task: 'Watch video', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Completed'},
-                                    {task: 'Review Codes', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Paused'},
-                                    {task: 'Make calls', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Completed'},
-                                    {task: 'Reading', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'In Progress'},
-                                    {task: 'Cooking', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
-                                ]}
+                                data={props.tasks}
+                                // data={[
+                                //     {task: 'Coding', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
+                                //     {task: 'Watch video', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Completed'},
+                                //     {task: 'Review Codes', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Paused'},
+                                //     {task: 'Make calls', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Completed'},
+                                //     {task: 'Reading', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'In Progress'},
+                                //     {task: 'Cooking', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
+                                // ]}_
                                 onRowClick={viewDetails}
                                 localization={{
                                     header:{
@@ -132,4 +144,15 @@ const Dashboard = (props) => {
     )
 }
 
-export default Dashboard;
+Dashboard.propTypes = {
+    fetchTasks: PropTypes.func.isRequired,
+    tasks: PropTypes.array.isRequired,
+    newTask: PropTypes.object
+};
+
+const mapStateToProps = (state) =>({
+    tasks: state.tasks.items,
+    newTask:  state.tasks.item
+});
+
+export default connect(mapStateToProps, { fetchTasks })(Dashboard);

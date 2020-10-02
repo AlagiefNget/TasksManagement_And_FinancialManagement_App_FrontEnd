@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from "@material-ui/core/MenuItem";
@@ -11,7 +12,8 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-
+import { connect } from 'react-redux';
+import { createTask } from '../../actions/tasksActions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,9 +34,9 @@ const TaskForm = (props) => {
     const classes = useStyles();
 
     const [task, setTask] = useState({
-        task_name: '',
-        date: '',
+        task: '',
         scheduled_at: '',
+        date: '',
         status: ''
     });
 
@@ -72,7 +74,7 @@ const TaskForm = (props) => {
         return () => {
             console.log('Cleaning up');
         }
-    }, [])
+    }, []);
 
     const handleChange = (e) => {
         console.log('ee '+e.target.value)
@@ -87,7 +89,8 @@ const TaskForm = (props) => {
     };
 
     const addNewTask = () => {
-        console.log('new task '+JSON.stringify(task));
+        props.createTask(task);
+        props.history.push('/');
     };
 
   return (
@@ -98,11 +101,11 @@ const TaskForm = (props) => {
                         <Grid container>
                             <Grid item xs={12} sm={12} md={12}>
                                 <TextField 
-                                    id="task_name" 
-                                    name="task_name" 
+                                    id="task" 
+                                    name="task" 
                                     label="Task" 
                                     variant="outlined"
-                                    value={task.task_name} 
+                                    value={task.task} 
                                     onChange={e => handleChange(e)} 
                                 />
                                 <TextField 
@@ -110,7 +113,7 @@ const TaskForm = (props) => {
                                     name="date" 
                                     label="Date" 
                                     variant="outlined"
-                                    value={task.task} 
+                                    value={task.date} 
                                     onChange={e => handleChange(e)} 
                                     type="date" 
                                 />
@@ -162,6 +165,14 @@ const TaskForm = (props) => {
                 </div>
             </Card>
   );
-}
+};
 
-export default TaskForm;
+TaskForm.propTypes = {
+    createTask: PropTypes.func.isRequired
+};
+
+const mapStateToProps = (state) =>({
+    newTask: state.tasks.item
+})
+
+export default connect(mapStateToProps, { createTask })(TaskForm);

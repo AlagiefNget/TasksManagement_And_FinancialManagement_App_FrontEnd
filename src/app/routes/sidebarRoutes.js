@@ -1,7 +1,6 @@
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-
 import Dashboard from '../containers/Dashboard/Dashboard';
 import Settings from '../containers/Settings/Settings';
 
