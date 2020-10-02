@@ -15,6 +15,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import { connect } from 'react-redux';
 import { fetchTasks } from '../../actions/tasksActions';
+import { deleteTask } from '../../actions/tasksActions';
 
 const Dashboard = (props) => {
     const classes = useStyles();
@@ -131,7 +132,8 @@ const Dashboard = (props) => {
                                     {
                                         icon: () => <IconButton color="secondary" aria-label="Delete task"><DeleteIcon /></IconButton>,
                                         tooltip: 'Delete Task',
-                                        onClick: (event, rowData) => alert('yoww '+JSON.stringify(rowData))
+                                        // onClick: (event, rowData) => alert('yoww '+JSON.stringify(rowData))
+                                        onClick: (event, rowData) => props.deleteTask(rowData.name)
                                     }
                                 ]}
                             
@@ -155,4 +157,4 @@ const mapStateToProps = (state) =>({
     newTask:  state.tasks.item
 });
 
-export default connect(mapStateToProps, { fetchTasks })(Dashboard);
+export default connect(mapStateToProps, { fetchTasks, deleteTask })(Dashboard);

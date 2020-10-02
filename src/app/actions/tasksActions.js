@@ -1,4 +1,4 @@
-import { FETCH_TASKS, NEW_TASK } from '../actions/types';
+import { FETCH_TASKS, NEW_TASK, DELETE_TASK } from '../actions/types';
 
 const data = [
     {task: 'Coding', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
@@ -35,4 +35,11 @@ export const createTask = (data) => dispatch => {
     //     type: NEW_POST,
     //     payload: post
     // }))
+};
+
+export const deleteTask =(name) => dispatch =>{
+    dispatch({
+        type: DELETE_TASK,
+        payload: name
+    });
 };
