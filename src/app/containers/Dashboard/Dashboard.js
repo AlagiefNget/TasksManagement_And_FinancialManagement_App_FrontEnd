@@ -13,9 +13,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
+
+import { fetchTodos, deleteTodo, editTodo } from '../../actions/todosActions';
 import { connect } from 'react-redux';
-import { fetchTasks } from '../../actions/tasksActions';
-import { deleteTask } from '../../actions/tasksActions';
 
 const Dashboard = (props) => {
     const classes = useStyles();
@@ -27,6 +27,13 @@ const Dashboard = (props) => {
     });
 
     const [tableTitle, setTableTitle] = useState('All Tasks');
+
+    const tableColumns = [
+        {title: 'Task', field: 'task'},
+        {title: 'Scheduled At', field: 'scheduled_at'},
+        {title: 'Date', field: 'date'},
+        {title: 'Status', field: 'status'}
+    ];
 
     const getAllTasks = () => {
         let _colors = {...colors};
@@ -44,7 +51,6 @@ const Dashboard = (props) => {
         _colors.postponed_color = 'primary';
         _colors.completed_color = '';
 
-
         setColors(_colors);
         setTableTitle('Cancelled/Postponed Tasks');
     };
@@ -60,20 +66,30 @@ const Dashboard = (props) => {
     };
 
     const viewDetails = (evt, rowData) => {
-        props.history.push(`/${rowData.tableData.id}`);
+        props.history.push(`/${rowData.id}`);
+        console.log(rowData)
     };
 
     useEffect(()=> {
-        props.fetchTasks();
-    });
-    
-    useEffect(() =>{
-        console.log('props '+JSON.stringify(props.newTask))
-        if(props.newTask){
-            props.tasks.unshift(props.newTask);
-        }
-    },[props.newTask]);
+        props.fetchTodos();
+    }, []);
 
+    useEffect(() =>{
+        if(props.newTodo){
+            props.todos.unshift(props.newTodo);
+        }
+    },[props.newTodo]);
+
+    const deleteTask = (event, rowData) => {
+        let response = window.confirm('Task will be deleted.');
+        if(response){
+            props.deleteTodo(rowData.id);
+        }
+    };
+
+    const editTodo = (event, rowData) => {
+        props.editTodo(rowData.id);
+    };
 
     return (
         <Container maxWidth="lg" className={classes.container}>
@@ -89,21 +105,8 @@ const Dashboard = (props) => {
                             <Table
                                 style={{padding: 9}}
                                 title={tableTitle}
-                                columns={[
-                                    {title: 'Task', field: 'task'},
-                                    {title: 'Scheduled At', field: 'scheduled_at'},
-                                    {title: 'Date', field: 'date'},
-                                    {title: 'Status', field: 'status'}
-                                ]}
-                                data={props.tasks}
-                                // data={[
-                                //     {task: 'Coding', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
-                                //     {task: 'Watch video', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Completed'},
-                                //     {task: 'Review Codes', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Paused'},
-                                //     {task: 'Make calls', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Completed'},
-                                //     {task: 'Reading', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'In Progress'},
-                                //     {task: 'Cooking', scheduled_at: '10:30 pm', date: '29/09/2020', status: 'Not Started'},
-                                // ]}_
+                                columns={tableColumns}
+                                data={props.todos}
                                 onRowClick={viewDetails}
                                 localization={{
                                     header:{
@@ -122,7 +125,7 @@ const Dashboard = (props) => {
                                         icon: () => <IconButton color="default" aria-label="Edit task"><EditIcon /></IconButton>,
                                         tooltip: 'Edit Task',
                                         color: 'primary',
-                                        onClick: (event, rowData) => alert(JSON.stringify(rowData))
+                                        onClick: (event, rowData) => editTodo(event, rowData)
                                     },
                                     {
                                         icon: () => <IconButton color="primary" aria-label="Mark task as complete"><DoneIcon /></IconButton>,
@@ -132,8 +135,7 @@ const Dashboard = (props) => {
                                     {
                                         icon: () => <IconButton color="secondary" aria-label="Delete task"><DeleteIcon /></IconButton>,
                                         tooltip: 'Delete Task',
-                                        // onClick: (event, rowData) => alert('yoww '+JSON.stringify(rowData))
-                                        onClick: (event, rowData) => props.deleteTask(rowData.name)
+                                        onClick: (event, rowData) => deleteTask(event, rowData)
                                     }
                                 ]}
                             
@@ -147,14 +149,16 @@ const Dashboard = (props) => {
 }
 
 Dashboard.propTypes = {
-    fetchTasks: PropTypes.func.isRequired,
-    tasks: PropTypes.array.isRequired,
-    newTask: PropTypes.object
+    fetchTodos: PropTypes.func.isRequired,
+    todos: PropTypes.array.isRequired,
+    newTodo: PropTypes.object,
+    deleteTodo: PropTypes.func,
+    editTodo: PropTypes.func
 };
 
-const mapStateToProps = (state) =>({
-    tasks: state.tasks.items,
-    newTask:  state.tasks.item
+const mapStateToProps = state => ({
+    todos: state.todos.items,
+    newTodo: state.todos.item
 });
 
-export default connect(mapStateToProps, { fetchTasks, deleteTask })(Dashboard);
+export default connect(mapStateToProps, { fetchTodos, deleteTodo, editTodo })(Dashboard);

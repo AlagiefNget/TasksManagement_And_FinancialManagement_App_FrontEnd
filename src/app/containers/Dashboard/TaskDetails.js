@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,6 +9,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import { connect } from 'react-redux';
+import { getTodo } from '../../actions/todosActions';
+
+
 
 const useStyles = makeStyles({
   table: {
@@ -15,8 +20,8 @@ const useStyles = makeStyles({
   },
 });
 
-const createData = (name, date, scheduled_at, status) => {
-  return { name, date, scheduled_at, status };
+const createData = (task, date, scheduled_at, status) => {
+  return { task, date, scheduled_at, status };
 };
 
 //This should come from the global state with redux
@@ -24,10 +29,26 @@ const rows = [
   createData('Coding', '10:30 pm', '29/09/2020', 'Not Started')
 ];
 
+
 const Details = (props) => {
   const classes = useStyles();
 
-  return (
+  const [todo, setTodo] = useState(null);
+
+  useEffect(() => {
+    // console.log('props')
+    // console.log(props)
+    // console.log('props')
+    props.getTodo(props.match.params.todo_id);
+  },[props.match.params.todo_id]);
+
+  useEffect(() => {
+    if(props.todo){
+      setTodo(props.todo)
+    }
+  },[props.todo]);
+
+  return todo && (
     <div>
       <div>
         <Button style={{float: 'right'}} variant="contained" color="secondary" onClick={() => props.history.goBack()}>Back</Button>
@@ -44,7 +65,15 @@ const Details = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                <TableRow key={todo.id}>
+                  <TableCell component="th" scope="row">
+                    {todo.task}
+                  </TableCell>
+                  <TableCell align="right">{todo.date}</TableCell>
+                  <TableCell align="right">{todo.scheduled_at}</TableCell>
+                  <TableCell align="right">{todo.status}</TableCell>
+                </TableRow>
+                {/* {rows.map((row) => (
                   <TableRow key={row.name}>
                     <TableCell component="th" scope="row">
                       {row.name}
@@ -53,7 +82,7 @@ const Details = (props) => {
                     <TableCell align="right">{row.scheduled_at}</TableCell>
                     <TableCell align="right">{row.status}</TableCell>
                   </TableRow>
-                ))}
+                ))} */}
               </TableBody>
           </Table>
         </TableContainer>
@@ -62,4 +91,13 @@ const Details = (props) => {
   );
 }
 
-export default Details;
+Details.propTypes = {
+  getTodo: PropTypes.func.isRequired,
+  todo: PropTypes.object
+};
+
+const mapStateToProps = state => ({
+  todo: state.todos.item
+});
+
+export default connect(mapStateToProps, { getTodo })(Details);

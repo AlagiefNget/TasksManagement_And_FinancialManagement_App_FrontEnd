@@ -127,34 +127,21 @@ const Header = (props) => {
           <Typography className={classes.title} variant="h6" noWrap>
             Tasks Manager
           </Typography>
-          {/* <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div> */}
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <Tooltip title="New Task" aria-label="add">
               {/* <IconButton aria-label="show 4 new mails" color="inherit" onClick={() => alert('hey')}> */}
               <IconButton aria-label="show 4 new mails" color="inherit" onClick={handleNewTask}>
-                <Fab size="small" color="default" className={classes.fab}>
+                {/* <Fab size="small" color="default" className={classes.fab}> */}
                     <AddIcon />
-                  </Fab>
+                  {/* </Fab> */}
               </IconButton>
             </Tooltip>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton aria-label="show 17 new notifications" color="inherit">
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />

@@ -1,3 +1,6 @@
-export const FETCH_TASKS = 'FETCH_TASKS';
-export const NEW_TASK = 'NEW_TASK';
-export const DELETE_TASK = 'DELETE_TASK';
+export const FETCH_TODOS = 'FETCH_TODOS';
+export const NEW_TODO = 'NEW_TODO';
+export const DELETE_TODO = 'DELETE_TODO';
+export const GET_TODO = 'GET_TODO';
+export const UPDATE_TODO = 'UPDATE_TODO';
+

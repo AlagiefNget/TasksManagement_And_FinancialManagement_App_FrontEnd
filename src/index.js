@@ -10,7 +10,7 @@ import store from './store';
 const _history = createBrowserHistory();
 
 ReactDOM.render(
-  <Provider store={store}>
+  <Provider store={store} >
     <BrowserRouter history={_history}>  
       <Switch>
         {

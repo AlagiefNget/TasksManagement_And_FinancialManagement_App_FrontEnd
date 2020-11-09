@@ -13,7 +13,7 @@ const sidebarRoutes = [
         component: Dashboard
     },
     {
-        name: 'Settins',
+        name: 'Settings',
         path: '/settings',
         icon: SettingsIcon,
         component: Settings

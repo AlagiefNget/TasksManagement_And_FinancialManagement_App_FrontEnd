@@ -12,8 +12,10 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+
 import { connect } from 'react-redux';
-import { createTask } from '../../actions/tasksActions';
+import { createTodo } from '../../actions/todosActions';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,7 +55,6 @@ const TaskForm = (props) => {
         if(mm < 10){
             mm = '0'+mm;
         }
-        console.log('dd '+( mm+"-"+dd+"-"+yyyy))
         return yyyy+"-"+mm+"-"+dd;
     };
 
@@ -68,16 +69,14 @@ const TaskForm = (props) => {
         let _task = {...task};
         _task.status = status[0].value;
         _task.date = getToday();
-        console.log('_task.date '+_task.date)
 
         setTask(_task);
-        return () => {
-            console.log('Cleaning up');
-        }
+        // return () => {
+        //     console.log('Cleaning up');
+        // }
     }, []);
 
     const handleChange = (e) => {
-        console.log('ee '+e.target.value)
         let _task = {...task};
         _task[e.target.name] = e.target.value;
 
@@ -89,8 +88,8 @@ const TaskForm = (props) => {
     };
 
     const addNewTask = () => {
-        props.createTask(task);
-        props.history.push('/');
+        props.createTodo(task);
+        // props.history.push('/');
     };
 
   return (
@@ -168,11 +167,7 @@ const TaskForm = (props) => {
 };
 
 TaskForm.propTypes = {
-    createTask: PropTypes.func.isRequired
+    createTodo: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (state) =>({
-    newTask: state.tasks.item
-})
-
-export default connect(mapStateToProps, { createTask })(TaskForm);
+export default connect(null, { createTodo })(TaskForm);
