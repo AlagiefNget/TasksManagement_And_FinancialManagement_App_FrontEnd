@@ -11,10 +11,13 @@ import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
+  DatePicker,
+  TimePicker
 } from '@material-ui/pickers';
-
+import TimeInput from 'material-ui-time-picker';
 import { connect } from 'react-redux';
-import { createTodo } from '../../actions/todosActions';
+import { createTodo, editTodo, getTodosCount } from '../../actions/todosActions';
+import Utils from '../../utils/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -66,10 +69,23 @@ const TaskForm = (props) => {
     ];
 
     useEffect(() => {
-        let _task = {...task};
-        _task.status = status[0].value;
-        _task.date = getToday();
+        if(props.location.taskData){
+            localStorage.setItem('taskData', JSON.stringify(props.location.taskData));
+        }
+    }, []);
 
+    useEffect(() => {
+
+        let _task;
+         
+        if(localStorage.getItem('taskData') !== null){
+            _task = JSON.parse(localStorage.getItem('taskData'));
+        }else{
+            _task = {...task}
+            _task.status = status[0].value;
+            _task.date = getToday();
+        }
+        
         setTask(_task);
         // return () => {
         //     console.log('Cleaning up');
@@ -88,11 +104,32 @@ const TaskForm = (props) => {
     };
 
     const addNewTask = () => {
-        props.createTodo(task);
-        // props.history.push('/');
+        if(task.id){
+            props.editTodo(task, result => {
+                if(result.error){
+                    Utils.displayMessage('error','Failed', result.errors[0]);
+                }else{
+                    Utils.displayMessage('success','Success', result.success);
+                    props.getTodosCount();
+                }
+            });
+        }else{
+            props.createTodo(task, result => {
+                if(result.error){
+                    Utils.displayMessage('error','Failed', result.errors[0]);
+                }else{
+                    Utils.displayMessage('success','Success', result.success);
+                    props.getTodosCount();
+                }
+            });
+        }
+        props.history.push('/');
     };
 
-  return (
+            
+
+
+    return (
             <Card>        
                 <div>
                     <form className={classes.root} autoComplete="off">
@@ -116,7 +153,21 @@ const TaskForm = (props) => {
                                     onChange={e => handleChange(e)} 
                                     type="date" 
                                 />
-                                <TextField 
+                                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DatePicker 
+                                        inputVariant="outlined" 
+                                        value={task.date} 
+                                        onChange={e => handleChange(e)}  
+                                    />
+                                </MuiPickersUtilsProvider>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <TimePicker 
+                                        value={task.scheduled_at}
+                                        onChange={e => handleChange(e)}   
+                                        inputVariant="outlined" 
+                                    />
+                                </MuiPickersUtilsProvider> */}
+                                {/* <TextField 
                                     id="scheduled_at" 
                                     name="scheduled_at" 
                                     label="Scheduled At" 
@@ -124,14 +175,14 @@ const TaskForm = (props) => {
                                     variant="outlined" 
                                     value={task.scheduled_at} 
                                     onChange={e => handleChange(e)} 
-                                    defaultValue="07:30"
+                                    // defaultValue="07:30"
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
-                                    inputProps={{
-                                        step: 300, // 5 min
-                                    }}
-                                />
+                                    // inputProps={{
+                                    //     step: 300, // 5 min
+                                    // }}
+                                /> */}
                                 <TextField
                                         required
                                         id="status"
@@ -163,11 +214,11 @@ const TaskForm = (props) => {
                     </form>
                 </div>
             </Card>
-  );
+    );
 };
 
 TaskForm.propTypes = {
     createTodo: PropTypes.func.isRequired
 };
 
-export default connect(null, { createTodo })(TaskForm);
+export default connect(null, { createTodo, editTodo, getTodosCount })(TaskForm);

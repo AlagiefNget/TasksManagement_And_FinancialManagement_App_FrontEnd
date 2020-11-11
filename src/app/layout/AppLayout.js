@@ -43,6 +43,7 @@ export default function PersistentDrawerLeft() {
             })
           }
           <Route exact path="/new-task" component={NewTask} />
+          <Route exact path="/edit-task" render={props => <NewTask {...props} /> } />
           <Route exact path="/:todo_id" component={TaskDetails} />
         </Switch>
       </main>

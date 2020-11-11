@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,6 +19,9 @@ import useStyles from '../../assets/headerStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
 import { useHistory } from "react-router-dom";
+import { getTodosCount } from '../../actions/todosActions';
+import { connect } from 'react-redux';
+
 
 const Header = (props) => {
   
@@ -27,6 +30,7 @@ const Header = (props) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [todoCount, setTodoCount] = useState(0);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -52,6 +56,24 @@ const Header = (props) => {
   const handleNewTask = () => {
     history.push('/new-task');
   };
+
+
+  useEffect(() => {
+    props.getTodosCount();
+    // return () => {
+    //   cleanup
+    // }
+  }, [])
+
+
+  useEffect(() =>{
+    console.log('hey')
+    console.log(props.numOfTodos)
+    setTodoCount(props.numOfTodos)
+    // setTodoCount(0)
+    console.log('hey')
+      
+    },[props.numOfTodos]);
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -80,17 +102,18 @@ const Header = (props) => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      {/* <MenuItem>
         <IconButton aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="secondary">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
+          {/* <Badge badgeContent={11} color="secondary"> */}
+          <Badge badgeContent={todoCount} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
@@ -143,7 +166,8 @@ const Header = (props) => {
               </Badge>
             </IconButton> */}
             <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
+              {/* <Badge badgeContent={17} color="secondary"> */}
+              <Badge badgeContent={todoCount} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -177,4 +201,8 @@ const Header = (props) => {
   );
 }
 
-export default Header;
+const mapStateToProps = state => ({
+  numOfTodos: state.todos.numOfTodos
+});
+
+export default connect(mapStateToProps, { getTodosCount })(Header);

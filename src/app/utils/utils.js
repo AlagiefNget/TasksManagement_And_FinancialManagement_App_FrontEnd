@@ -30,4 +30,9 @@ export default class Utils {
         });
     };
 
+    static getTime = (dateTime) => {
+        let _temp = dateTime.slice(11, 21)
+        return _temp;
+    };
+
 }

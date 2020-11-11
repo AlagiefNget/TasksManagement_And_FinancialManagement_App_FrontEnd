@@ -1,8 +1,9 @@
-import { FETCH_TODOS, NEW_TODO, DELETE_TODO, GET_TODO, UPDATE_TODO } from '../actions/types';
+import { FETCH_TODOS, NEW_TODO, DELETE_TODO, GET_TODO, COMPLETE_TODO, UPDATE_TODO, GET_COUNT } from '../actions/types';
 
 const initialState = {
     items: [],
-    item: {}
+    item: {},
+    numOfTodos: 0
 };
 
 const TodosReducer = (state = initialState, { type, payload }) => {
@@ -27,13 +28,33 @@ const TodosReducer = (state = initialState, { type, payload }) => {
                 ...state,
                 item: payload
             }
-        // case UPDATE_TODO:
-        //     return {
-        //         ...state,
-        //         items: payload
-        //     }
+        case COMPLETE_TODO:
+            return {
+                ...state,
+                items: [
+                    ...state.items.map(todo => {
+                     return (todo.id === payload.id) ?
+                         {...todo, status: payload.status} : todo
+                   })
+                 ] 
+            }
+        case UPDATE_TODO:
+            return {
+                ...state,
+                items: [
+                    ...state.items.map(todo => {
+                        return (todo.id === payload.id) ?
+                            {...payload} : todo
+                    })
+                    ] 
+            }
+        case GET_COUNT:
+            return {
+                ...state,
+                numOfTodos: payload
+            }
         default: return state;
     }
 };
 
-export default TodosReducer;
+export default TodosReducer;  

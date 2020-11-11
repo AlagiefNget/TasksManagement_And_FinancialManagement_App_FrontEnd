@@ -14,8 +14,9 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 
-import { fetchTodos, deleteTodo, editTodo } from '../../actions/todosActions';
+import { fetchTodos, deleteTodo, editTodo, completeTodo, getTodosCount } from '../../actions/todosActions';
 import { connect } from 'react-redux';
+import Utils from '../../utils/utils';
 
 const Dashboard = (props) => {
     const classes = useStyles();
@@ -27,10 +28,12 @@ const Dashboard = (props) => {
     });
 
     const [tableTitle, setTableTitle] = useState('All Tasks');
+    const [view, setView] = useState('All')
+    const[todos, setTodos] = useState([]);
 
     const tableColumns = [
         {title: 'Task', field: 'task'},
-        {title: 'Scheduled At', field: 'scheduled_at'},
+        // {title: 'Scheduled At', field: 'scheduled_at', render: rowData => Utils.getTime(rowData.scheduled_at)},
         {title: 'Date', field: 'date'},
         {title: 'Status', field: 'status'}
     ];
@@ -40,9 +43,11 @@ const Dashboard = (props) => {
         _colors.all_color = 'primary';
         _colors.postponed_color = '';
         _colors.completed_color = '';
-
+        
         setColors(_colors);
         setTableTitle('All Tasks');
+        setView('All');
+        setTodos(props.todos);
     };
 
     const getPostponedTasks = () => {
@@ -51,8 +56,12 @@ const Dashboard = (props) => {
         _colors.postponed_color = 'primary';
         _colors.completed_color = '';
 
+        let _temp = [...props.todos];
+        let _todos = _temp.filter(todo => todo.status === 'Paused');
         setColors(_colors);
         setTableTitle('Cancelled/Postponed Tasks');
+        setView('Paused');
+        setTodos(_todos);
     };
 
     const getCompletedTasks = () => {
@@ -61,8 +70,12 @@ const Dashboard = (props) => {
         _colors.postponed_color = '';
         _colors.completed_color = 'primary';
 
+        let _temp = [...props.todos];
+        let _todos = _temp.filter(todo => todo.status === 'Completed');
         setColors(_colors);
         setTableTitle('Completed Tasks');
+        setView('Completed');
+        setTodos(_todos);
     };
 
     const viewDetails = (evt, rowData) => {
@@ -74,6 +87,10 @@ const Dashboard = (props) => {
         props.fetchTodos();
     }, []);
 
+    useEffect(()=> {
+        setTodos(props.todos);
+    }, [props.todos]);
+
     useEffect(() =>{
         if(props.newTodo){
             props.todos.unshift(props.newTodo);
@@ -81,14 +98,41 @@ const Dashboard = (props) => {
     },[props.newTodo]);
 
     const deleteTask = (event, rowData) => {
+        let id = rowData.id;
         let response = window.confirm('Task will be deleted.');
         if(response){
-            props.deleteTodo(rowData.id);
+            props.deleteTodo(id, result => {
+                if(result.error){
+                    Utils.displayMessage('error','Failed', result.errors[0]);
+                }else{
+                    setTodos(todos.filter(todo => todo.id !== id));
+                    Utils.displayMessage('success','Success', result.success);
+                    props.getTodosCount();
+                }
+            });
+        }
+    };
+
+    const markTaskAsComplete = (event, rowData) => {
+        let id = rowData.id;
+        let response = window.confirm('Task will be marked as completed.');
+        if(response){
+            props.completeTodo(id, result => {
+                if(result.error){
+                    Utils.displayMessage('error','Failed', result.errors[0]);
+                }else{
+                    Utils.displayMessage('success','Success', result.success);
+                    props.getTodosCount();
+                }
+            });
         }
     };
 
     const editTodo = (event, rowData) => {
-        props.editTodo(rowData.id);
+        props.history.push({
+            pathname: '/edit-task',
+            taskData: rowData
+        });
     };
 
     return (
@@ -106,7 +150,7 @@ const Dashboard = (props) => {
                                 style={{padding: 9}}
                                 title={tableTitle}
                                 columns={tableColumns}
-                                data={props.todos}
+                                data={todos}
                                 onRowClick={viewDetails}
                                 localization={{
                                     header:{
@@ -118,7 +162,12 @@ const Dashboard = (props) => {
                                     grouping: false, sorting: true,
                                     debounceInterval: 1000,
                                     selection: false, showTitle: true,
-                                    pageSize: 5,actionsColumnIndex: -1
+                                    pageSize: 5,actionsColumnIndex: -1,
+                                    rowStyle: view === 'All' ? rowData => ({
+                                        backgroundColor: (rowData.status === 'Completed') ? '#CCC' : '#FFF',
+                                    }) : () => ({
+                                        backgroundColor: '#FFF',
+                                    })
                                 }}
                                 actions={[
                                     {
@@ -130,7 +179,7 @@ const Dashboard = (props) => {
                                     {
                                         icon: () => <IconButton color="primary" aria-label="Mark task as complete"><DoneIcon /></IconButton>,
                                         tooltip: 'Mark as Complete',
-                                        onClick: (event, rowData) => alert(JSON.stringify(rowData))
+                                        onClick: (event, rowData) => markTaskAsComplete(event, rowData)
                                     },
                                     {
                                         icon: () => <IconButton color="secondary" aria-label="Delete task"><DeleteIcon /></IconButton>,
@@ -161,4 +210,4 @@ const mapStateToProps = state => ({
     newTodo: state.todos.item
 });
 
-export default connect(mapStateToProps, { fetchTodos, deleteTodo, editTodo })(Dashboard);
+export default connect(mapStateToProps, { fetchTodos, deleteTodo, editTodo, completeTodo, getTodosCount })(Dashboard);
