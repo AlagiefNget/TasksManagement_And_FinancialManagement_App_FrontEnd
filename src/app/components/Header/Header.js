@@ -18,7 +18,7 @@ import AddIcon from '@material-ui/icons/Add';
 import useStyles from '../../assets/headerStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
-import { useHistory } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import { getTodosCount } from '../../actions/todosActions';
 import { connect } from 'react-redux';
 
@@ -46,6 +46,11 @@ const Header = (props) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    props.history.push('/sign-in');
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -87,7 +92,7 @@ const Header = (props) => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -205,4 +210,4 @@ const mapStateToProps = state => ({
   numOfTodos: state.todos.numOfTodos
 });
 
-export default connect(mapStateToProps, { getTodosCount })(Header);
+export default withRouter(connect(mapStateToProps, { getTodosCount })(Header));

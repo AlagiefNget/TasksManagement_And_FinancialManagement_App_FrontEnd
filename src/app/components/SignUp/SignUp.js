@@ -66,7 +66,7 @@ const SignUp = (props) =>{
         </Typography>
         <form className={classes.form}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 autoComplete="fname"
                 name="firstName"
@@ -80,7 +80,7 @@ const SignUp = (props) =>{
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -106,7 +106,7 @@ const SignUp = (props) =>{
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -120,7 +120,7 @@ const SignUp = (props) =>{
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -153,9 +153,6 @@ const SignUp = (props) =>{
           </Grid>
         </form>
       </div>
-      <Box mt={5}>
-        <Footer />
-      </Box>
     </Container>
   );
 }

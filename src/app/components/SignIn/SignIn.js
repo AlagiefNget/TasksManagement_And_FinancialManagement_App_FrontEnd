@@ -49,7 +49,13 @@ const SignIn = (props) => {
   };
 
   const handleSignIn = () => {
-    console.log('your credentials '+JSON.stringify(credentials));
+    const { email, password } = credentials;
+    if(email === 'anget@insistglobal.com' && password === '12345'){
+        props.history.push({
+          pathname: '/',
+          user: email
+        });
+    }
   };
 
   return (
@@ -117,9 +123,6 @@ const SignIn = (props) => {
           </Grid>
         </form>
       </div>
-      <Box mt={8}>
-        <Footer />
-      </Box>
     </Container>
   );
 }
