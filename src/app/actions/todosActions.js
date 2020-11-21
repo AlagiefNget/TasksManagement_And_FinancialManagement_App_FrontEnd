@@ -111,7 +111,7 @@ export const completeTodo = (id, callback) => dispatch => {
     })
 };
 
-export const getTodosCount = () => dispatch => {
+export const getTodoCount = () => dispatch => {
     $.ajax({
         method: 'GET',
         url: 'http://localhost:3000/api/v1/todos/get_todos_count',

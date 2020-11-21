@@ -14,9 +14,10 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 
-import { fetchTodos, deleteTodo, editTodo, completeTodo, getTodosCount } from '../../actions/todosActions';
+import { fetchTodos, deleteTodo, editTodo, completeTodo, getTodoCount } from '../../actions/todosActions';
 import { connect } from 'react-redux';
 import Utils from '../../utils/utils';
+import New_Task from "../../components/Forms/New_Task";
 
 const Dashboard = (props) => {
     const classes = useStyles();
@@ -30,6 +31,8 @@ const Dashboard = (props) => {
     const [tableTitle, setTableTitle] = useState('All Tasks');
     const [view, setView] = useState('All')
     const[todos, setTodos] = useState([]);
+    const [open, setOpen] = React.useState(false);
+    const [taskData, setTaskData] = React.useState(null);
 
     const tableColumns = [
         {title: 'Task', field: 'task'},
@@ -38,6 +41,9 @@ const Dashboard = (props) => {
         {title: 'Status', field: 'status'}
     ];
 
+    const handleClose = () => {
+        setOpen(false);
+    };
     const getAllTasks = () => {
         let _colors = {...colors};
         _colors.all_color = 'primary';
@@ -110,7 +116,7 @@ const Dashboard = (props) => {
                 }else{
                     setTodos(todos.filter(todo => todo.id !== id));
                     Utils.displayMessage('success','Success', result.success);
-                    props.getTodosCount();
+                    props.getTodoCount();
                 }
             });
         }
@@ -125,17 +131,19 @@ const Dashboard = (props) => {
                     Utils.displayMessage('error','Failed', result.errors[0]);
                 }else{
                     Utils.displayMessage('success','Success', result.success);
-                    props.getTodosCount();
+                    props.getTodoCount();
                 }
             });
         }
     };
 
     const editTodo = (event, rowData) => {
-        props.history.push({
-            pathname: '/edit-task',
-            taskData: rowData
-        });
+        setTaskData(rowData);
+        setOpen(true);
+        // props.history.push({
+        //     pathname: '/edit-task',
+        //     taskData: rowData
+        // });
     };
 
     return (
@@ -196,9 +204,12 @@ const Dashboard = (props) => {
                     </div>
                 </Grid>
             </Grid>
+            {
+                (taskData && open) ? <New_Task open={open} onClose={handleClose} taskData={taskData} /> : null
+            }
         </Container>
     )
-}
+};
 
 Dashboard.propTypes = {
     fetchTodos: PropTypes.func.isRequired,
@@ -213,4 +224,4 @@ const mapStateToProps = state => ({
     newTodo: state.todos.item
 });
 
-export default connect(mapStateToProps, { fetchTodos, deleteTodo, editTodo, completeTodo, getTodosCount })(Dashboard);
+export default connect(mapStateToProps, { fetchTodos, deleteTodo, editTodo, completeTodo, getTodoCount })(Dashboard);

@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import clsx from 'clsx';
 import AddIcon from '@material-ui/icons/Add';
 import useStyles from '../../assets/headerStyles';
 import Tooltip from '@material-ui/core/Tooltip';
-import Fab from '@material-ui/core/Fab';
-import { useHistory, withRouter } from "react-router-dom";
-import { getTodosCount } from '../../actions/todosActions';
-import { connect } from 'react-redux';
+import {useHistory, withRouter} from "react-router-dom";
+import {getTodoCount} from '../../actions/todosActions';
+import {connect} from 'react-redux';
+import New_Task from '../../components/Forms/New_Task';
 
 
 const Header = (props) => {
@@ -31,6 +28,11 @@ const Header = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [todoCount, setTodoCount] = useState(0);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -57,17 +59,13 @@ const Header = (props) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-
   const handleNewTask = () => {
-    history.push('/new-task');
+    setOpen(true);
   };
 
 
   useEffect(() => {
-    props.getTodosCount();
-    // return () => {
-    //   cleanup
-    // }
+    props.getTodoCount();
   }, [])
 
 
@@ -197,12 +195,14 @@ const Header = (props) => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+
+      <New_Task open={open} onClose={handleClose} />
     </div>
   );
-}
+};
 
 const mapStateToProps = state => ({
   numOfTodos: state.todos.numOfTodos
 });
 
-export default withRouter(connect(mapStateToProps, { getTodosCount })(Header));
+export default withRouter(connect(mapStateToProps, { getTodoCount })(Header));
