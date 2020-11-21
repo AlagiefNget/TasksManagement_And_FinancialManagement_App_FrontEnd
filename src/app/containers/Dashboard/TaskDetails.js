@@ -36,9 +36,6 @@ const Details = (props) => {
   const [todo, setTodo] = useState(null);
 
   useEffect(() => {
-    // console.log('props')
-    // console.log(props)
-    // console.log('props')
     props.getTodo(props.match.params.todo_id);
   },[props.match.params.todo_id]);
 

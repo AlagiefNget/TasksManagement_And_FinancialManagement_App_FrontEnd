@@ -30,19 +30,19 @@ const PersistentDrawerLeft = (props) => {
   }, [props.location.user]);
 
   useEffect(() => {
-    if(props.location.user === undefined && localStorage.getItem('user') === null){
+    if(props.location.user === undefined || localStorage.getItem('token') === null){
       props.history.push('/sign-in');
     }
-  }, [])
+  }, []);
 
   return (
     <div className={classes.root}>
         <CssBaseline />
-        
+
         <Header open={open} handleDrawerOpen={handleDrawerOpen} />
-        
+
         <SideBar open={open}  handleDrawerClose={handleDrawerClose} routes={sidebarRoutes} />
-       
+
         <main
           className={clsx(classes.content, {
             [classes.contentShift]: open,

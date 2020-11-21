@@ -24,7 +24,7 @@ import { connect } from 'react-redux';
 
 
 const Header = (props) => {
-  
+
   const classes = useStyles();
   const history = useHistory();
 
@@ -72,13 +72,8 @@ const Header = (props) => {
 
 
   useEffect(() =>{
-    console.log('hey')
-    console.log(props.numOfTodos)
-    setTodoCount(props.numOfTodos)
-    // setTodoCount(0)
-    console.log('hey')
-      
-    },[props.numOfTodos]);
+    setTodoCount(props.numOfTodos);
+  },[props.numOfTodos]);
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (

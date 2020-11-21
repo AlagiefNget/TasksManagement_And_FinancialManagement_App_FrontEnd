@@ -43,7 +43,7 @@ const Dashboard = (props) => {
         _colors.all_color = 'primary';
         _colors.postponed_color = '';
         _colors.completed_color = '';
-        
+
         setColors(_colors);
         setTableTitle('All Tasks');
         setView('All');
@@ -80,8 +80,11 @@ const Dashboard = (props) => {
 
     const viewDetails = (evt, rowData) => {
         props.history.push(`/${rowData.id}`);
-        console.log(rowData)
     };
+
+    useEffect(() => {
+        localStorage.removeItem('taskData');
+    }, []);
 
     useEffect(()=> {
         props.fetchTodos();
@@ -139,7 +142,7 @@ const Dashboard = (props) => {
         <Container maxWidth="lg" className={classes.container}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <div>   
+                    <div>
                         <div style={{padding: '0px 10px', marginBottom: 5}}>
                             <Chip color={colors.all_color} label="All" style={{marginRight: 5}} onClick={getAllTasks}/>
                             <Chip color={colors.postponed_color} label="Postponed" style={{marginRight: 5}} onClick={getPostponedTasks}/>
@@ -187,7 +190,7 @@ const Dashboard = (props) => {
                                         onClick: (event, rowData) => deleteTask(event, rowData)
                                     }
                                 ]}
-                            
+
                             />
                         </div>
                     </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,7 +11,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Footer from '../Footer/Footer';
+import { createUser } from '../../actions/usersActions';
+import { connect } from 'react-redux';
+import Utils from '../../utils/utils';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,21 +40,34 @@ const SignUp = (props) =>{
   const classes = useStyles();
   const [credentials, setCredentials] = useState({
     firstName: '',
+    middleName: '',
     lastName: '',
     email: '',
     password: '',
-    confirm_password: '',
+    password_confirmation: '',
   });
 
   const handleChange = (e) => {
     let _cred = {...credentials};
-    _cred[e.target.name] = e.target.value;
+    _cred[e.target.name] = e.target.value.trim();
 
     setCredentials(_cred);
   };
 
   const handleSignUp = () => {
-    console.log('your credentials '+JSON.stringify(credentials));
+    const { password, password_confirmation } = credentials;
+    if( password !== password_confirmation ){
+      Utils.displayMessage('error','Failed', 'Passwords do not match');
+    }else{
+      props.createUser({user: credentials}, result => {
+        if(result.error){
+          Utils.displayMessage('error','Failed', result.errors[0]);
+        }else{
+          Utils.displayMessage('success','Success', result.success);
+          props.history.push('/sign-in');
+        }
+      });
+    }
   };
 
   return (
@@ -77,6 +93,19 @@ const SignUp = (props) =>{
                 label="First Name"
                 autoFocus
                 value={credentials.firstName}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="middleName"
+                variant="outlined"
+                required
+                fullWidth
+                id="middleName"
+                label="Middle Name"
+                autoFocus
+                value={credentials.middleName}
                 onChange={handleChange}
               />
             </Grid>
@@ -125,12 +154,12 @@ const SignUp = (props) =>{
                 variant="outlined"
                 required
                 fullWidth
-                name="confirm_password"
+                name="password_confirmation"
                 label="Confirm"
                 type="password"
-                id="confirm_password"
+                id="password_confirmation"
                 autoComplete="current-password"
-                value={credentials.confirm_password}
+                value={credentials.password_confirmation}
                 onChange={handleChange}
               />
             </Grid>
@@ -157,4 +186,9 @@ const SignUp = (props) =>{
   );
 }
 
-export default SignUp;
+
+SignUp.propTypes = {
+  createUser: PropTypes.func.isRequired,
+};
+
+export default connect(null, { createUser })(SignUp);

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,6 +14,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { NavLink } from 'react-router-dom';
 import Footer from '../Footer/Footer';
+import { connect } from 'react-redux';
+import { LoginUser } from '../../actions/usersActions';
+import Utils from '../../utils/utils';
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -49,13 +54,18 @@ const SignIn = (props) => {
   };
 
   const handleSignIn = () => {
-    const { email, password } = credentials;
-    if(email === 'anget@insistglobal.com' && password === '12345'){
+    props.LoginUser(credentials, result => {
+      if(result.error){
+        Utils.displayMessage('error','Failed', result.errors[0].user_authentication);
+      }else{
+        Utils.displayMessage('success','Success', 'Successfully logged in');
+        localStorage.setItem("token", result.auth_token);
         props.history.push({
           pathname: '/',
-          user: email
+          user: result.user
         });
-    }
+      }
+    });
   };
 
   return (
@@ -125,6 +135,10 @@ const SignIn = (props) => {
       </div>
     </Container>
   );
-}
+};
 
-export default SignIn;
+LoginUser.propTypes = {
+  createUser: PropTypes.func.isRequired,
+};
+
+export default connect(null, { LoginUser })(SignIn);
