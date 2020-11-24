@@ -184,7 +184,7 @@ const SignUp = (props) =>{
       </div>
     </Container>
   );
-}
+};
 
 
 SignUp.propTypes = {

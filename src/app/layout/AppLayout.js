@@ -8,7 +8,9 @@ import {Route, Switch} from 'react-router-dom';
 import sidebarRoutes from '../routes/sidebarRoutes';
 import TaskDetails from '../containers/Dashboard/TaskDetails';
 import ExpenseTracker from '../containers/ExpenseTracker/ExpenseTracker';
-
+import cookies from 'react-cookies';
+import ViewProfile from "../containers/Settings/ViewProfile";
+import Home from "../containers/Settings/Home";
 
 const PersistentDrawerLeft = (props) => {
     const classes = useStyles();
@@ -23,13 +25,7 @@ const PersistentDrawerLeft = (props) => {
     };
 
     useEffect(() => {
-        if (props.location.user) {
-            localStorage.setItem('user', props.location.user);
-        }
-    }, [props.location.user]);
-
-    useEffect(() => {
-        if (props.location.user === undefined || localStorage.getItem('token') === null) {
+        if (!cookies.load('userId') || !cookies.load('token')) {
             props.history.push('/sign-in');
         }
     }, []);
@@ -54,9 +50,9 @@ const PersistentDrawerLeft = (props) => {
                             return <Route exact path={route.path} component={route.component} key={route.key}/>
                         })
                     }
-
-                    <Route exact path="/:todo_id" component={TaskDetails}/>
                     <Route exact path="/expense-tracker" component={ExpenseTracker}/>
+                    <Route exact path="/edit-profile" component={Home}/>
+                    <Route exact path="/:todo_id" component={TaskDetails}/>
                 </Switch>
             </main>
         </div>

@@ -8,5 +8,7 @@ export const GET_COUNT = 'GET_COUNT';
 
 export const NEW_USER = 'NEW_USER';
 export const LOGIN_USER = 'LOGIN_USER';
+export const UPDATE_USER = 'UPDATE_USER';
+export const RESET_PASSWORD = 'RESET_PASSWORD';
 
 

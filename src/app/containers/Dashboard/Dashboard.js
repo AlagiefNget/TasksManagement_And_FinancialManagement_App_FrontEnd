@@ -140,10 +140,6 @@ const Dashboard = (props) => {
     const editTodo = (event, rowData) => {
         setTaskData(rowData);
         setOpen(true);
-        // props.history.push({
-        //     pathname: '/edit-task',
-        //     taskData: rowData
-        // });
     };
 
     return (

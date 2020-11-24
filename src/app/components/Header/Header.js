@@ -48,11 +48,15 @@ const Header = (props) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
+    props.history.push('/edit-profile');
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
     props.history.push('/sign-in');
+  };
+
+  const editProfile = () => {
+    props.history.push('/edit-profile');
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -63,10 +67,9 @@ const Header = (props) => {
     setOpen(true);
   };
 
-
   useEffect(() => {
     props.getTodoCount();
-  }, [])
+  }, []);
 
 
   useEffect(() =>{
@@ -85,6 +88,7 @@ const Header = (props) => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      {/*<MenuItem onClick={editProfile}>Profile</MenuItem>*/}
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
