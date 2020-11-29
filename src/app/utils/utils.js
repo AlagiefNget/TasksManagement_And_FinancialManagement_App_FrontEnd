@@ -41,4 +41,27 @@ export default class Utils {
         {label: 'Completed', value: 'Completed'}
     ];
 
+    static validateEmail(email) {
+        if (email === null || email === undefined || email.lenth == 0)
+            return false;
+
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    static isValid = (val) => {
+        return (isNaN(+(val)));
+    };
+
+    static confirmDeleteMessage = (text) => {
+        return swal({
+            title: "Are you sure?",
+            text: text,
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+    };
+
+
 }

@@ -12,22 +12,22 @@ const TodosReducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 items: payload
-            }
+            };
         case NEW_TODO:
             return {
                 ...state,
                 item: payload
-            }
+            };
         case DELETE_TODO:
             return {
                 ...state,
                 items: state.items.filter(todo => todo.id !== payload)
-            }
+            };
         case GET_TODO:
             return {
                 ...state,
                 item: payload
-            }
+            };
         case COMPLETE_TODO:
             return {
                 ...state,
@@ -36,8 +36,8 @@ const TodosReducer = (state = initialState, { type, payload }) => {
                      return (todo.id === payload.id) ?
                          {...todo, status: payload.status} : todo
                    })
-                 ] 
-            }
+                 ]
+            };
         case UPDATE_TODO:
             return {
                 ...state,
@@ -46,15 +46,15 @@ const TodosReducer = (state = initialState, { type, payload }) => {
                         return (todo.id === payload.id) ?
                             {...payload} : todo
                     })
-                    ] 
-            }
+                    ]
+            };
         case GET_COUNT:
             return {
                 ...state,
                 numOfTodos: payload
-            }
+            };
         default: return state;
     }
 };
 
-export default TodosReducer;  
+export default TodosReducer;

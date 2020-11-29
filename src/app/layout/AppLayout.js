@@ -11,6 +11,7 @@ import ExpenseTracker from '../containers/ExpenseTracker/ExpenseTracker';
 import cookies from 'react-cookies';
 import ViewProfile from "../containers/Settings/ViewProfile";
 import Home from "../containers/Settings/Home";
+import ClientDetails from "../containers/Clients/ClientDetails";
 
 const PersistentDrawerLeft = (props) => {
     const classes = useStyles();
@@ -52,6 +53,7 @@ const PersistentDrawerLeft = (props) => {
                     }
                     <Route exact path="/expense-tracker" component={ExpenseTracker}/>
                     <Route exact path="/edit-profile" component={Home}/>
+                    <Route exact path="/clients/:client_id" component={ClientDetails} />
                     <Route exact path="/:todo_id" component={TaskDetails}/>
                 </Switch>
             </main>
