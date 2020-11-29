@@ -95,7 +95,7 @@ const Projects = (props) => {
                         <div>
                             <Table
                                 style={{padding: 9}}
-                                title={tableTitle}
+                                title={"Projects"}
                                 columns={tableColumns}
                                 data={projects}
                                 onRowClick={viewDetails}
@@ -110,11 +110,6 @@ const Projects = (props) => {
                                     debounceInterval: 1000,
                                     selection: false, showTitle: true,
                                     pageSize: 5, actionsColumnIndex: -1,
-                                    rowStyle: view === 'All' ? rowData => ({
-                                        backgroundColor: (rowData.status === 'Completed') ? '#CCC' : '#FFF',
-                                    }) : () => ({
-                                        backgroundColor: '#FFF',
-                                    })
                                 }}
                                 actions={[
                                     {
