@@ -72,7 +72,8 @@ const Clients = (props) => {
             });
     };
 
-    const editTodo = (event, rowData) => {
+    const editClient = (event, rowData) => {
+        rowData.editing = true;
         setClientData(rowData);
         setOpen(true);
     };
@@ -115,7 +116,7 @@ const Clients = (props) => {
                                                                 aria-label="Edit task"><EditIcon/></IconButton>,
                                         tooltip: 'Edit Task',
                                         color: 'primary',
-                                        onClick: (event, rowData) => editTodo(event, rowData)
+                                        onClick: (event, rowData) => editClient(event, rowData)
                                     },
                                     {
                                         icon: () => <IconButton color="secondary"
@@ -131,8 +132,7 @@ const Clients = (props) => {
                 </Grid>
             </Grid>
             {
-                (clientData && open) ? <New_Client open={open} onClose={handleClose} clientData={clientData} /> : null
-                // (open) ? <New_Client open={open} onClose={handleClose} clientData={clientData}/> : null
+                (clientData || open) ? <New_Client open={open} onClose={handleClose} clientData={(clientData) ? clientData : {}} /> : null
             }
         </Container>
     )

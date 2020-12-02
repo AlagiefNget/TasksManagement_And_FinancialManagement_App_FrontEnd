@@ -10,8 +10,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 
 import {connect} from 'react-redux';
-import Utils from '../../utils/utils';
 import {fetchProjects} from "../../actions/projectActions";
+import Chip from "@material-ui/core/Chip";
+import New_Project from "../../components/Forms/New_Project";
 
 const Projects = (props) => {
     const classes = useStyles();
@@ -23,7 +24,7 @@ const Projects = (props) => {
     const tableColumns = [
         {title: 'Project', field: 'name'},
         {title: 'Client', field: 'client_name'},
-        {title: 'due_date', field: 'due_date'},
+        {title: 'Due Date', field: 'due_date'},
         {title: 'Amount', field: 'amount'},
         {title: 'Balance', field: 'balance'},
         {title: 'Status', field: 'status'}
@@ -51,39 +52,47 @@ const Projects = (props) => {
         }
     }, [props.newTodo]);
 
-    const deleteTask = (event, rowData) => {
-        let id = rowData.id;
-        let response = window.confirm('Task will be deleted.');
-        if (response) {
-            props.deleteTodo(id, result => {
-                if (result.error) {
-                    Utils.displayMessage('error', 'Failed', result.errors[0]);
-                } else {
-                    setProjects(projects.filter(todo => todo.id !== id));
-                    Utils.displayMessage('success', 'Success', result.success);
-                    props.getTodoCount();
-                }
-            });
-        }
+    // const deleteTask = (event, rowData) => {
+    //     let id = rowData.id;
+    //     let response = window.confirm('Task will be deleted.');
+    //     if (response) {
+    //         props.deleteTodo(id, result => {
+    //             if (result.error) {
+    //                 Utils.displayMessage('error', 'Failed', result.errors[0]);
+    //             } else {
+    //                 setProjects(projects.filter(todo => todo.id !== id));
+    //                 Utils.displayMessage('success', 'Success', result.success);
+    //                 props.getTodoCount();
+    //             }
+    //         });
+    //     }
+    // };
+    //
+    // const markTaskAsComplete = (event, rowData) => {
+    //     let id = rowData.id;
+    //     let response = window.confirm('Task will be marked as completed.');
+    //     if (response) {
+    //         props.completeTodo(id, result => {
+    //             if (result.error) {
+    //                 Utils.displayMessage('error', 'Failed', result.errors[0]);
+    //             } else {
+    //                 Utils.displayMessage('success', 'Success', result.success);
+    //                 props.getTodoCount();
+    //             }
+    //         });
+    //     }
+    // };
+    //
+    // const editTodo = (event, rowData) => {
+    //     setTaskData(rowData);
+    //     setOpen(true);
+    // };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
-    const markTaskAsComplete = (event, rowData) => {
-        let id = rowData.id;
-        let response = window.confirm('Task will be marked as completed.');
-        if (response) {
-            props.completeTodo(id, result => {
-                if (result.error) {
-                    Utils.displayMessage('error', 'Failed', result.errors[0]);
-                } else {
-                    Utils.displayMessage('success', 'Success', result.success);
-                    props.getTodoCount();
-                }
-            });
-        }
-    };
-
-    const editTodo = (event, rowData) => {
-        setTaskData(rowData);
+    const newProject = () => {
         setOpen(true);
     };
 
@@ -92,6 +101,10 @@ const Projects = (props) => {
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <div>
+                        <div style={{padding: '0px 10px', marginBottom: 5}}>
+                            <Chip color="primary" label="New Project" style={{marginRight: 5}}
+                                  onClick={newProject}/>
+                        </div>
                         <div>
                             <Table
                                 style={{padding: 9}}
@@ -117,18 +130,18 @@ const Projects = (props) => {
                                                                 aria-label="Edit task"><EditIcon/></IconButton>,
                                         tooltip: 'Edit Task',
                                         color: 'primary',
-                                        onClick: (event, rowData) => editTodo(event, rowData)
+                                        // onClick: (event, rowData) => editTodo(event, rowData)
                                     },
                                     {
                                         icon: () => <IconButton color="primary"
                                                                 aria-label="Mark task as complete"><DoneIcon/></IconButton>,
                                         tooltip: 'Mark as Complete',
-                                        onClick: (event, rowData) => markTaskAsComplete(event, rowData)
+                                        // onClick: (event, rowData) => markTaskAsComplete(event, rowData)
                                     },
                                     {
                                         icon: () => <IconButton color="secondary" aria-label="Delete task"><DeleteIcon/></IconButton>,
                                         tooltip: 'Delete Task',
-                                        onClick: (event, rowData) => deleteTask(event, rowData)
+                                        // onClick: (event, rowData) => deleteTask(event, rowData)
                                     }
                                 ]}
 
@@ -137,24 +150,21 @@ const Projects = (props) => {
                     </div>
                 </Grid>
             </Grid>
-            {/*{*/}
-            {/*    (taskData && open) ? <New_Task open={open} onClose={handleClose} taskData={taskData} /> : null*/}
-            {/*}*/}
+            {
+                // (clientData || open) ? <New_Project open={open} onClose={handleClose} clientData={(clientData) ? clientData : {}} /> : null
+                (open) ? <New_Project open={open} onClose={handleClose}/> : null
+            }
         </Container>
     )
 };
 
 Projects.propTypes = {
     fetchTodos: PropTypes.func.isRequired,
-    projects: PropTypes.array.isRequired,
-    // newTodo: PropTypes.object,
-    // deleteTodo: PropTypes.func,
-    // editTodo: PropTypes.func
+    projects: PropTypes.array.isRequired
 };
 
 const mapStateToProps = state => ({
     projects: state.projects.items,
-    // newTodo: state.projects.item
 });
 
 export default connect(mapStateToProps, {fetchProjects})(Projects);

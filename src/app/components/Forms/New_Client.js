@@ -8,8 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Utils from "../../utils/utils";
 import {connect} from "react-redux";
-import {createClient, fetchClients, getClient, editClient} from "../../actions/clientsActions";
-import MenuItem from "@material-ui/core/MenuItem";
+import {createClient, editClient, fetchClients, getClient} from "../../actions/clientsActions";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,13 +40,13 @@ const ClientForm = (props) => {
     });
 
     useEffect(() => {
-        if(props.clientData !== undefined){
+        if (props.clientData !== undefined || props.clientData !== null) {
             localStorage.setItem('clientData', JSON.stringify(props.clientData));
         }
-    }, []);
+    }, [props.clientData]);
 
     useEffect(() => {
-        if(localStorage.getItem('clientData') !== null){
+        if (localStorage.getItem('clientData') !== null) {
             let _client = JSON.parse(localStorage.getItem('clientData'));
             setClient(_client);
         }
@@ -67,9 +66,18 @@ const ClientForm = (props) => {
 
     const validateFields = () => {
         const {name, phone_number, email} = client;
-        if(name === '') return 'name';
-        if(phone_number === '') return 'phone_number';
-        if(email === '' || !Utils.validateEmail(email)) return 'email';
+        if (name === '') return 'name';
+        if (phone_number === '') return 'phone_number';
+        if (email === '' || !Utils.validateEmail(email)) return 'email';
+    };
+
+    const clearForm = () => {
+        setClient({
+            name: '',
+            email: '',
+            phone_number: '',
+            address: ''
+        });
     };
 
     const setFocus = (field_id) => {
@@ -77,31 +85,46 @@ const ClientForm = (props) => {
         document.getElementById(field_id).focus();
     };
 
+    const close = () => {
+        if (client.editing) {
+            setClient({
+                id: null,
+                name: '',
+                email: '',
+                phone_number: '',
+                address: ''
+            });
+        } else {
+            clearForm();
+        }
+        props.onClose();
+    };
+
     const addClient = () => {
         const validate = validateFields();
-        if (validate){
+        if (validate) {
             setFocus(validate);
             return;
         }
-        if(client.id){
+        if (client.id) {
             props.editClient(client, result => {
-                if(result.error){
-                    Utils.displayMessage('error','Failed', result.errors[0]);
-                }else{
-                    Utils.displayMessage('success','Success', result.success);
+                if (result.error) {
+                    Utils.displayMessage('error', 'Failed', result.errors[0]);
+                } else {
+                    Utils.displayMessage('success', 'Success', result.success);
                     props.fetchClients();
-                    props.onClose();
+                    close();
                 }
             });
-        }else{
+        } else {
             props.createClient(client, result => {
-                if(result.error){
-                    Utils.displayMessage('error','Failed', result.errors[0]);
-                }else{
-                    Utils.displayMessage('success','Success', result.success);
+                if (result.error) {
+                    Utils.displayMessage('error', 'Failed', result.errors[0]);
+                } else {
+                    Utils.displayMessage('success', 'Success', result.success);
                     // props.getTodoCount();
                     props.fetchClients();
-                    props.onClose();
+                    close();
                 }
             });
         }
@@ -159,7 +182,8 @@ const ClientForm = (props) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button color="secondary" onClick={props.onClose} variant="contained" style={{margin: 5, float: 'left'}}>
+                <Button color="secondary" onClick={() => close()} variant="contained"
+                        style={{margin: 5, float: 'left'}}>
                     Cancel
                 </Button>
                 <Button variant="contained" color="primary" style={{margin: 5, float: 'left'}} onClick={addClient}>
@@ -177,4 +201,4 @@ ClientForm.propTypes = {
     editClient: PropTypes.func.isRequired
 };
 
-export default connect(null, { createClient, fetchClients, getClient, editClient })(ClientForm);
+export default connect(null, {createClient, fetchClients, getClient, editClient})(ClientForm);

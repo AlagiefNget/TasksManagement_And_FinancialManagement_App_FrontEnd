@@ -8,9 +8,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Utils from "../../utils/utils";
 import {connect} from "react-redux";
-import {createTodo, editTodo, getTodoCount, fetchTodos} from "../../actions/todosActions";
 import MenuItem from "@material-ui/core/MenuItem";
 import {makeStyles} from "@material-ui/core/styles";
+import {fetchClients} from "../../actions/clientsActions";
+import {fetchProjects, createProject} from "../../actions/projectActions";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,25 +36,34 @@ const ProjectForm = (props) => {
 
     const [project, setProject] = useState({
         name: '',
-        client: '',
+        client_id: '',
         due_date: '',
         amount: '',
         balance: '',
         status: ''
     });
 
+    const [clientSelectList, setClientSelectList] = useState([]);
+
     useEffect(() => {
-        if(props.projectData !== undefined){
-            localStorage.setItem('projectData', JSON.stringify(props.projectData));
-        }
+        props.fetchClients();
+        // if(props.projectData !== undefined){
+        //     localStorage.setItem('projectData', JSON.stringify(props.projectData));
+        // }
     }, []);
+
+    useEffect(() => {
+        let _clients = [];
+        props.clients.map(client => _clients.push({label: client.name, value: client.id}));
+        setClientSelectList(_clients);
+    }, [props.clients]);
 
     useEffect(() => {
         let _project;
         if(localStorage.getItem('projectData') !== null){
             _project = JSON.parse(localStorage.getItem('projectData'));
         }else{
-            _project = {..._project};
+            _project = {...project};
             _project.status = Utils.status[0].value;
             _project.due_date = Utils.getToday();
         }
@@ -67,24 +77,23 @@ const ProjectForm = (props) => {
         setProject(_project);
     };
 
-    const addNewTask = () => {
+    const addNewProject = () => {
         if(project.id){
             props.editTodo(project, result => {
                 if(result.error){
                     Utils.displayMessage('error','Failed', result.errors[0]);
                 }else{
                     Utils.displayMessage('success','Success', result.success);
-                    props.getTodoCount();
+                    props.fetchProjects();
                 }
             });
         }else{
-            props.createTodo(project, result => {
+            props.createProject(project, result => {
                 if(result.error){
                     Utils.displayMessage('error','Failed', result.errors[0]);
                 }else{
                     Utils.displayMessage('success','Success', result.success);
-                    props.getTodoCount();
-                    props.fetchTodos();
+                    props.fetchProjects();
                 }
             });
         }
@@ -102,7 +111,7 @@ const ProjectForm = (props) => {
                     required
                     id="name"
                     name="name"
-                    label="Task"
+                    label="Project Name"
                     variant="outlined"
                     value={project.name}
                     onChange={e => handleChange(e)}
@@ -110,15 +119,28 @@ const ProjectForm = (props) => {
                     className={classes.applySpacing}
                 />
                 <TextField
-                    id="client"
-                    name="client"
-                    label="Task"
-                    variant="outlined"
-                    value={project.client}
+                    required
+                    id="client_id"
+                    name="client_id"
+                    select
+                    label="Client"
+                    value={project.client_id}
                     onChange={e => handleChange(e)}
+                    variant="outlined"
+                    style={{
+                        border: 0,
+                        outline: 0
+                    }}
                     fullWidth
                     className={classes.applySpacing}
-                />
+                >
+                    {clientSelectList.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {/*{option.label+" id: "+option.value}*/}
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </TextField>
                 <TextField
                     id="due_date"
                     name="due_date"
@@ -157,7 +179,7 @@ const ProjectForm = (props) => {
                 <Button color="secondary" onClick={props.onClose} variant="contained" style={{margin: 5, float: 'left'}}>
                     Cancel
                 </Button>
-                <Button variant="contained" color="primary" style={{margin: 5, float: 'left'}} onClick={addNewTask}>
+                <Button variant="contained" color="primary" style={{margin: 5, float: 'left'}} onClick={addNewProject}>
                     Save
                 </Button>
             </DialogActions>
@@ -166,9 +188,12 @@ const ProjectForm = (props) => {
 };
 
 ProjectForm.propTypes = {
-    // createTodo: PropTypes.func.isRequired
-    createTodo: PropTypes.func
+    fetchClients: PropTypes.func,
+    createProject: PropTypes.func
 };
 
-export default connect(null, { createTodo, editTodo, getTodoCount, fetchTodos })(ProjectForm);
-// export default connect(null, { createTodo, editTodo, getTodoCount, fetchTodos })(ProjectForm);
+const mapStateToProps = state => ({
+    clients: state.clients.items,
+});
+
+export default connect(mapStateToProps, { fetchClients, fetchProjects, createProject})(ProjectForm);
