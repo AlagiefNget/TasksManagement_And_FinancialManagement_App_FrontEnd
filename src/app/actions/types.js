@@ -19,6 +19,10 @@ export const RESET_PASSWORD = 'RESET_PASSWORD';
 
 export const FETCH_PROJECTS = 'FETCH_PROJECTS';
 export const NEW_PROJECT = 'NEW_PROJECT';
+export const EDIT_PROJECT = 'EDIT_PROJECT';
+export const DELETE_PROJECT = 'DELETE_PROJECT';
+export const COMPLETE_PROJECT = 'COMPLETE_PROJECT';
+export const TILES_DATA = 'TILES_DATA';
 
 
 //Types for clients

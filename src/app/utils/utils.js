@@ -63,5 +63,60 @@ export default class Utils {
         })
     };
 
+    static validateName(text) {
+        let reg = /^[A-zÀ-ú]+(?:['-][A-zÀ-ú]+)*$/; //Validates name with accented letters
+        return reg.test(text.trim());
+    };
+
+    static currencies = [
+        {
+            value: 'GMD',
+            label: 'GMD',
+        },
+        {
+            value: 'CFA',
+            label: 'CFA',
+        },
+        {
+            value: 'USD',
+            // label: '$',
+            label: 'USD',
+        },
+        {
+            value: 'EUR',
+            // label: '€',
+            label: 'EUR',
+        },
+        {
+            value: 'JPY',
+            // label: '¥',
+            label: 'JPY',
+        },
+    ];
+
+    static dateFormat = (n) => {
+        if (!n)
+            return '';
+        if (n === 'none')
+            return n;
+        //Used for date display
+        var opts = {};
+        opts.day = "numeric";
+        // opts.weekday = "long";
+        opts.year = "numeric";
+        opts.month = "numeric";
+        var lang = navigator.language || navigator.userLanguage;
+
+        n = n.slice(0, 10);
+        let _tmp = n.split('-');
+
+        let dd = _tmp[2];
+        let mm = _tmp[1] - 1;
+        let yyyy = _tmp[0];
+        var event = new Date(Date.UTC(yyyy, mm, dd));
+
+        return event.toLocaleDateString(lang, opts);
+    };
+
 
 }

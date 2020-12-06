@@ -18,31 +18,54 @@ import {useHistory, withRouter} from "react-router-dom";
 import {getTodoCount} from '../../actions/todosActions';
 import {connect} from 'react-redux';
 import New_Task from '../../components/Forms/New_Task';
-
+import New_Project from "../Forms/New_Project";
+import New_Client from "../Forms/New_Client";
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 const Header = (props) => {
 
   const classes = useStyles();
-  const history = useHistory();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [addNewAnchorEl, setAddNewAnchorEl] = useState(null);
   const [todoCount, setTodoCount] = useState(0);
-  const [open, setOpen] = React.useState(false);
 
-  const handleClose = () => {
-    setOpen(false);
+  const [openNewTask, setOpenNewTask] = React.useState(false);
+  const [openNewClient, setOpenNewClient] = React.useState(false);
+  const [openNewProject, setOpenNewProject] = React.useState(false);
+
+
+  const handleCloseProject = () => {
+    setOpenNewProject(false);
+  };
+
+  const handleCloseClient = () => {
+    setOpenNewClient(false);
+  };
+
+  const handleCloseTask = () => {
+    setOpenNewTask(false);
   };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isAddMenuOpen = Boolean(addNewAnchorEl);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleAddMenuOpen = (event) => {
+    setAddNewAnchorEl(event.currentTarget);
+  };
+
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
+  };
+
+  const handleAddMenuClose = () => {
+    setAddNewAnchorEl(null);
   };
 
   const handleMenuClose = () => {
@@ -55,16 +78,8 @@ const Header = (props) => {
     props.history.push('/sign-in');
   };
 
-  const editProfile = () => {
-    props.history.push('/edit-profile');
-  };
-
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const handleNewTask = () => {
-    setOpen(true);
   };
 
   useEffect(() => {
@@ -75,6 +90,22 @@ const Header = (props) => {
   useEffect(() =>{
     setTodoCount(props.numOfTodos);
   },[props.numOfTodos]);
+
+  const newTask = () => {
+    setOpenNewTask(true);
+    handleAddMenuClose();
+
+  };
+
+  const newProject = () => {
+    setOpenNewProject(true);
+    handleAddMenuClose();
+  };
+
+  const newClient = () => {
+    setOpenNewClient(true);
+    handleAddMenuClose();
+  };
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -88,11 +119,26 @@ const Header = (props) => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      {/*<MenuItem onClick={editProfile}>Profile</MenuItem>*/}
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
+  const addMenuId = 'menu-to-add-new-object';
+  const renderAddMenu = (
+      <Menu
+          anchorEl={addNewAnchorEl}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          id={addMenuId}
+          keepMounted
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={isAddMenuOpen}
+          onClose={handleAddMenuClose}
+      >
+        <MenuItem onClick={newTask}>Task</MenuItem>
+        <MenuItem onClick={newClient}>Client</MenuItem>
+        <MenuItem onClick={newProject}>Project</MenuItem>
+      </Menu>
+  );
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -104,17 +150,8 @@ const Header = (props) => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      {/* <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem> */}
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
-          {/* <Badge badgeContent={11} color="secondary"> */}
           <Badge badgeContent={todoCount} color="secondary">
             <NotificationsIcon />
           </Badge>
@@ -154,21 +191,17 @@ const Header = (props) => {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <Tooltip title="New Task" aria-label="add">
-              {/* <IconButton aria-label="show 4 new mails" color="inherit" onClick={() => alert('hey')}> */}
-              <IconButton aria-label="show 4 new mails" color="inherit" onClick={handleNewTask}>
-                {/* <Fab size="small" color="default" className={classes.fab}> */}
-                    <AddIcon />
-                  {/* </Fab> */}
-              </IconButton>
-            </Tooltip>
-            {/* <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <MailIcon />
-              </Badge>
-            </IconButton> */}
+            <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleAddMenuOpen}
+                color="inherit"
+            >
+              <AddCircleOutlineIcon />
+            </IconButton>
             <IconButton aria-label="show 17 new notifications" color="inherit">
-              {/* <Badge badgeContent={17} color="secondary"> */}
               <Badge badgeContent={todoCount} color="secondary">
                 <NotificationsIcon />
               </Badge>
@@ -199,8 +232,11 @@ const Header = (props) => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      {renderAddMenu}
 
-      <New_Task open={open} onClose={handleClose} />
+      <New_Task open={openNewTask} onClose={handleCloseTask} />
+      <New_Project open={openNewProject} onClose={handleCloseProject} />
+      {/*<New_Client open={openNewClient} onClose={handleCloseClient} />*/}
     </div>
   );
 };

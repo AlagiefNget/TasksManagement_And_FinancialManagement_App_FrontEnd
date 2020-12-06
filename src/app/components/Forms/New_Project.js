@@ -11,7 +11,7 @@ import {connect} from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
 import {makeStyles} from "@material-ui/core/styles";
 import {fetchClients} from "../../actions/clientsActions";
-import {fetchProjects, createProject} from "../../actions/projectActions";
+import {fetchProjects, createProject, editProject} from "../../actions/projectActions";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,16 +40,31 @@ const ProjectForm = (props) => {
         due_date: '',
         amount: '',
         balance: '',
-        status: ''
+        status: '',
+        currency: ''
     });
 
     const [clientSelectList, setClientSelectList] = useState([]);
 
+    const clearForm = () => {
+        setProject({
+            name: '',
+            client_id: '',
+            due_date: '',
+            amount: '',
+            balance: '',
+            status: '',
+            currency: '',
+            description: ''
+        });
+    };
+
+
     useEffect(() => {
         props.fetchClients();
-        // if(props.projectData !== undefined){
-        //     localStorage.setItem('projectData', JSON.stringify(props.projectData));
-        // }
+        if(props.projectData !== undefined){
+            localStorage.setItem('projectData', JSON.stringify(props.projectData));
+        }
     }, []);
 
     useEffect(() => {
@@ -61,7 +76,7 @@ const ProjectForm = (props) => {
     useEffect(() => {
         let _project;
         if(localStorage.getItem('projectData') !== null){
-            _project = JSON.parse(localStorage.getItem('projectData'));
+            _project = {...JSON.parse(localStorage.getItem('projectData'))};
         }else{
             _project = {...project};
             _project.status = Utils.status[0].value;
@@ -77,23 +92,47 @@ const ProjectForm = (props) => {
         setProject(_project);
     };
 
+    const close = () => {
+        if (project.editing) {
+            setProject({
+                id: null,
+                name: '',
+                client_id: '',
+                due_date: '',
+                amount: '',
+                balance: '',
+                status: '',
+                currency: '',
+                description: '',
+            });
+        } else {
+            clearForm();
+        }
+        props.onClose();
+    };
+
     const addNewProject = () => {
         if(project.id){
-            props.editTodo(project, result => {
+            props.editProject(project, result => {
                 if(result.error){
                     Utils.displayMessage('error','Failed', result.errors[0]);
                 }else{
                     Utils.displayMessage('success','Success', result.success);
                     props.fetchProjects();
+                    close();
                 }
             });
         }else{
             props.createProject(project, result => {
                 if(result.error){
                     Utils.displayMessage('error','Failed', result.errors[0]);
+
                 }else{
-                    Utils.displayMessage('success','Success', result.success);
-                    props.fetchProjects();
+                    if(result.success){
+                        Utils.displayMessage('success','Success', result.success);
+                        props.fetchProjects();
+                        close();
+                    }
                 }
             });
         }
@@ -103,8 +142,7 @@ const ProjectForm = (props) => {
     return (
         <Dialog open={props.open} onClose={props.onClose} aria-labelledby="form-dialog-title">
             <DialogTitle>
-                {/*{(props.projectData) ? "Edit Task" : "New Task"}*/}
-                New Project
+                {(props.projectData) ? "Edit Project" : "New Project"}
             </DialogTitle>
             <DialogContent dividers>
                 <TextField
@@ -144,11 +182,43 @@ const ProjectForm = (props) => {
                 <TextField
                     id="due_date"
                     name="due_date"
-                    label="Date"
+                    label="Due Date"
                     variant="outlined"
                     value={project.due_date}
                     onChange={e => handleChange(e)}
-                    type="due_date"
+                    type="date"
+                    fullWidth
+                    className={classes.applySpacing}
+                />
+                <TextField
+                    required
+                    id="currency"
+                    name="currency"
+                    select
+                    label="Currency"
+                    value={project.currency}
+                    onChange={e => handleChange(e)}
+                    variant="outlined"
+                    style={{
+                        border: 0,
+                        outline: 0
+                    }}
+                    fullWidth
+                    className={classes.applySpacing}
+                >
+                    {Utils.currencies.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </TextField>
+                <TextField
+                    id="amount"
+                    name="amount"
+                    label="Price"
+                    variant="outlined"
+                    value={project.amount}
+                    onChange={e => handleChange(e)}
                     fullWidth
                     className={classes.applySpacing}
                 />
@@ -188,12 +258,14 @@ const ProjectForm = (props) => {
 };
 
 ProjectForm.propTypes = {
-    fetchClients: PropTypes.func,
-    createProject: PropTypes.func
+    fetchClients: PropTypes.func.isRequired,
+    createProject: PropTypes.func.isRequired,
+    editProject: PropTypes.func.isRequired,
+    fetchProjects: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
     clients: state.clients.items,
 });
 
-export default connect(mapStateToProps, { fetchClients, fetchProjects, createProject})(ProjectForm);
+export default connect(mapStateToProps, { createProject, editProject, fetchProjects, fetchClients })(ProjectForm);

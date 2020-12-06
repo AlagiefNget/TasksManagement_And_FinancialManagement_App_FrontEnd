@@ -108,32 +108,44 @@ const Tasks = (props) => {
 
     const deleteTask = (event, rowData) => {
         let id = rowData.id;
-        let response = window.confirm('Task will be deleted.');
-        if(response){
-            props.deleteTodo(id, result => {
-                if(result.error){
-                    Utils.displayMessage('error','Failed', result.errors[0]);
-                }else{
-                    setTodos(todos.filter(todo => todo.id !== id));
-                    Utils.displayMessage('success','Success', result.success);
-                    props.getTodoCount();
+        let text = "Task will be deleted, do you want to continue?";
+
+        Utils.confirmDeleteMessage(text)
+            .then((willDelete) => {
+                if (willDelete) {
+                    props.deleteTodo(id, result => {
+                        if (result.error) {
+                            Utils.displayMessage('error', 'Failed', result.errors[0]).then(r => r);
+                        } else {
+                            setTodos(todos.filter(todo => todo.id !== id));
+                            Utils.displayMessage('success','Success', result.success);
+                            props.getTodoCount();
+                        }
+                    });
                 }
             });
-        }
     };
 
     const markTaskAsComplete = (event, rowData) => {
-        let id = rowData.id;
-        let response = window.confirm('Task will be marked as completed.');
-        if(response){
-            props.completeTodo(id, result => {
-                if(result.error){
-                    Utils.displayMessage('error','Failed', result.errors[0]);
-                }else{
-                    Utils.displayMessage('success','Success', result.success);
-                    props.getTodoCount();
-                }
-            });
+        if(rowData.status === 'Completed'){
+            Utils.displayMessage('error', 'Failed', 'Task has already been marked as completed').then(r => r);
+        }else{
+            let id = rowData.id;
+            let text = "Task will be marked as completed, do you want to continue?";
+
+            Utils.confirmDeleteMessage(text)
+                .then((willDelete) => {
+                    if (willDelete) {
+                        props.completeTodo(id, result => {
+                            if (result.error) {
+                                Utils.displayMessage('error', 'Failed', result.errors[0]).then(r => r);
+                            } else {
+                                Utils.displayMessage('success', 'Success', result.success).then(r => r);
+                                props.getTodoCount();
+                            }
+                        });
+                    }
+                });
         }
     };
 

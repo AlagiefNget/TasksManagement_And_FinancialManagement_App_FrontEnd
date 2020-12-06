@@ -1,30 +1,36 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import Container from "@material-ui/core/Container";
 import useStyles from '../../assets/dashboardStyles';
 import Table from 'material-table';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
-
 import {connect} from 'react-redux';
-import {fetchProjects} from "../../actions/projectActions";
+import {fetchProjects, deleteProject, completeProject, getTilesData} from "../../actions/projectActions";
 import Chip from "@material-ui/core/Chip";
 import New_Project from "../../components/Forms/New_Project";
+import Utils from "../../utils/utils";
+import IconTile from "../../components/Tiles/IconTile";
+import {red, blue, green} from '@material-ui/core/colors';
+import ListIcon from '@material-ui/icons/List';
+import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
+import ScheduleIcon from '@material-ui/icons/Schedule';
 
 const Projects = (props) => {
     const classes = useStyles();
 
     const [projects, setProjects] = useState([]);
+    const [tilesData, setTilesData] = useState({});
     const [open, setOpen] = React.useState(false);
-    const [taskData, setTaskData] = React.useState(null);
+    const [projectData, setProjectData] = React.useState(null);
 
     const tableColumns = [
         {title: 'Project', field: 'name'},
         {title: 'Client', field: 'client_name'},
-        {title: 'Due Date', field: 'due_date'},
+        {title: 'Due Date', field: 'due_date', render: rowData => Utils.dateFormat(rowData.due_date)},
+        {title: 'Currency', field: 'currency'},
         {title: 'Amount', field: 'amount'},
         {title: 'Balance', field: 'balance'},
         {title: 'Status', field: 'status'}
@@ -35,11 +41,12 @@ const Projects = (props) => {
     };
 
     useEffect(() => {
-        localStorage.removeItem('taskData');
+        localStorage.removeItem('projectData');
     }, []);
 
     useEffect(() => {
         props.fetchProjects();
+        props.getTilesData();
     }, []);
 
     useEffect(() => {
@@ -47,46 +54,54 @@ const Projects = (props) => {
     }, [props.projects]);
 
     useEffect(() => {
-        if (props.newTodo) {
-            props.projects.unshift(props.newTodo);
-        }
-    }, [props.newTodo]);
+        setTilesData(props.tilesData);
+    }, [props.tilesData]);
 
-    // const deleteTask = (event, rowData) => {
-    //     let id = rowData.id;
-    //     let response = window.confirm('Task will be deleted.');
-    //     if (response) {
-    //         props.deleteTodo(id, result => {
-    //             if (result.error) {
-    //                 Utils.displayMessage('error', 'Failed', result.errors[0]);
-    //             } else {
-    //                 setProjects(projects.filter(todo => todo.id !== id));
-    //                 Utils.displayMessage('success', 'Success', result.success);
-    //                 props.getTodoCount();
-    //             }
-    //         });
-    //     }
-    // };
-    //
-    // const markTaskAsComplete = (event, rowData) => {
-    //     let id = rowData.id;
-    //     let response = window.confirm('Task will be marked as completed.');
-    //     if (response) {
-    //         props.completeTodo(id, result => {
-    //             if (result.error) {
-    //                 Utils.displayMessage('error', 'Failed', result.errors[0]);
-    //             } else {
-    //                 Utils.displayMessage('success', 'Success', result.success);
-    //                 props.getTodoCount();
-    //             }
-    //         });
-    //     }
-    // };
-    //
-    // const editTodo = (event, rowData) => {
-    //     setTaskData(rowData);
-    //     setOpen(true);
-    // };
+    const markProjectAsComplete = (event, rowData) => {
+        if(rowData.status === 'Completed'){
+            Utils.displayMessage('error', 'Failed', 'Project has already been marked as completed').then(r => r);
+        }else{
+            let id = rowData.id;
+            let text = "Project will be marked as completed, do you want to continue?";
+
+            Utils.confirmDeleteMessage(text)
+                .then((willDelete) => {
+                    if (willDelete) {
+                        props.completeProject(id, result => {
+                            if (result.error) {
+                                Utils.displayMessage('error', 'Failed', result.errors[0]).then(r => r);
+                            } else {
+                                Utils.displayMessage('success', 'Success', result.success).then(r => r);
+                            }
+                        });
+                    }
+                });
+        }
+    };
+
+    const editProject = (event, rowData) => {
+        rowData.editing = true;
+        setProjectData(rowData);
+        setOpen(true);
+    };
+
+    const deleteProject = (event, rowData) => {
+        let id = rowData.id;
+        let text = "Project will be deleted, do you want to continue?";
+
+        Utils.confirmDeleteMessage(text)
+            .then((willDelete) => {
+                if (willDelete) {
+                    props.deleteProject(id, result => {
+                        if (result.error) {
+                            Utils.displayMessage('error', 'Failed', result.errors[0]).then(r => r);
+                        } else {
+                            Utils.displayMessage('success', 'Success', result.success).then(r => r);
+                        }
+                    });
+                }
+            });
+    };
 
     const handleClose = () => {
         setOpen(false);
@@ -96,75 +111,91 @@ const Projects = (props) => {
         setOpen(true);
     };
 
-    return (
-        <Container maxWidth="lg" className={classes.container}>
+    return projects && (
+        <div>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <div>
-                        <div style={{padding: '0px 10px', marginBottom: 5}}>
-                            <Chip color="primary" label="New Project" style={{marginRight: 5}}
-                                  onClick={newProject}/>
-                        </div>
-                        <div>
-                            <Table
-                                style={{padding: 9}}
-                                title={"Projects"}
-                                columns={tableColumns}
-                                data={projects}
-                                onRowClick={viewDetails}
-                                localization={{
-                                    header: {
-                                        actions: ''
-                                    }
-                                }}
-                                options={{
-                                    exportButton: false, filtering: false,
-                                    grouping: false, sorting: true,
-                                    debounceInterval: 1000,
-                                    selection: false, showTitle: true,
-                                    pageSize: 5, actionsColumnIndex: -1,
-                                }}
-                                actions={[
-                                    {
-                                        icon: () => <IconButton color="default"
-                                                                aria-label="Edit task"><EditIcon/></IconButton>,
-                                        tooltip: 'Edit Task',
-                                        color: 'primary',
-                                        // onClick: (event, rowData) => editTodo(event, rowData)
-                                    },
-                                    {
-                                        icon: () => <IconButton color="primary"
-                                                                aria-label="Mark task as complete"><DoneIcon/></IconButton>,
-                                        tooltip: 'Mark as Complete',
-                                        // onClick: (event, rowData) => markTaskAsComplete(event, rowData)
-                                    },
-                                    {
-                                        icon: () => <IconButton color="secondary" aria-label="Delete task"><DeleteIcon/></IconButton>,
-                                        tooltip: 'Delete Task',
-                                        // onClick: (event, rowData) => deleteTask(event, rowData)
-                                    }
-                                ]}
+                        <Grid container spacing={3}>
+                            <Grid item xs={3} sm={3} md={4}>
+                                <IconTile title='Total Projects' color={red} icon={ListIcon} count={tilesData.total_projects} />
+                            </Grid>
+                            <Grid item xs={3} sm={3} md={4}>
+                                <IconTile title='Completed Projects' color={blue} icon={PlaylistAddCheckIcon} count={tilesData.completed_projects} />
+                            </Grid>
+                            <Grid item xs={3} sm={3} md={4}>
+                                <IconTile title='Due Projects' color={green} icon={ScheduleIcon} count={tilesData.due_projects} />
+                            </Grid>
+                        </Grid>
+                        <Grid>
+                            <div style={{padding: '0px 10px', marginBottom: 5, marginTop: 15}}>
+                                <Chip color="primary" label="New Project" style={{marginRight: 5}}
+                                      onClick={newProject}/>
+                            </div>
+                            <div>
+                                <Table
+                                    style={{padding: 9}}
+                                    title={"Projects"}
+                                    columns={tableColumns}
+                                    data={projects}
+                                    onRowClick={viewDetails}
+                                    localization={{
+                                        header: {
+                                            actions: ''
+                                        }
+                                    }}
+                                    options={{
+                                        exportButton: false, filtering: false,
+                                        grouping: false, sorting: true,
+                                        debounceInterval: 1000,
+                                        selection: false, showTitle: true,
+                                        pageSize: 5, actionsColumnIndex: -1,
+                                    }}
+                                    actions={[
+                                        {
+                                            icon: () => <IconButton color="default"
+                                                                    aria-label="Edit task"><EditIcon/></IconButton>,
+                                            tooltip: 'Edit Project',
+                                            color: 'primary',
+                                            onClick: (event, rowData) => editProject(event, rowData)
+                                        },
+                                        {
+                                            icon: () => <IconButton color="primary"
+                                                                    aria-label="Mark projects as complete"><DoneIcon/></IconButton>,
+                                            tooltip: 'Mark as Complete',
+                                            onClick: (event, rowData) => markProjectAsComplete(event, rowData)
+                                        },
+                                        {
+                                            icon: () => <IconButton color="secondary" aria-label="Delete task"><DeleteIcon/></IconButton>,
+                                            tooltip: 'Delete Task',
+                                            onClick: (event, rowData) => deleteProject(event, rowData)
+                                        }
+                                    ]}
 
-                            />
-                        </div>
+                                />
+                            </div>
+                        </Grid>
                     </div>
+                    {
+                       (projectData || open) ? <New_Project open={open} onClose={handleClose} projectData={(projectData) ? projectData : {}} /> : null
+                    }
                 </Grid>
             </Grid>
-            {
-                // (clientData || open) ? <New_Project open={open} onClose={handleClose} clientData={(clientData) ? clientData : {}} /> : null
-                (open) ? <New_Project open={open} onClose={handleClose}/> : null
-            }
-        </Container>
+        </div>
     )
 };
 
 Projects.propTypes = {
-    fetchTodos: PropTypes.func.isRequired,
+    fetchProjects: PropTypes.func.isRequired,
+    deleteProject: PropTypes.func.isRequired,
+    completeProject: PropTypes.func.isRequired,
+    getTilesData: PropTypes.func.isRequired,
     projects: PropTypes.array.isRequired
 };
 
 const mapStateToProps = state => ({
     projects: state.projects.items,
+    tilesData: state.projects.tilesData
 });
 
-export default connect(mapStateToProps, {fetchProjects})(Projects);
+export default connect(mapStateToProps, {fetchProjects, deleteProject, completeProject, getTilesData})(Projects);
