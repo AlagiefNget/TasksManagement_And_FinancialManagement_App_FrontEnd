@@ -23,6 +23,7 @@ export const EDIT_PROJECT = 'EDIT_PROJECT';
 export const DELETE_PROJECT = 'DELETE_PROJECT';
 export const COMPLETE_PROJECT = 'COMPLETE_PROJECT';
 export const TILES_DATA = 'TILES_DATA';
+export const GET_PROJECT = 'GET_PROJECT';
 
 
 //Types for clients
@@ -32,3 +33,7 @@ export const NEW_CLIENT = 'NEW_CLIENT';
 export const DELETE_CLIENT = 'DELETE_CLIENT';
 export const GET_CLIENT = 'GET_CLIENT';
 export const UPDATE_CLIENT = 'UPDATE_CLIENT';
+
+
+//Types for charges
+export const NEW_CHARGE = 'NEW_CHARGE';

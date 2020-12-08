@@ -37,7 +37,7 @@ const Projects = (props) => {
     ];
 
     const viewDetails = (evt, rowData) => {
-        props.history.push(`/${rowData.id}`);
+        props.history.push(`${props.match.url}/${rowData.id}`);
     };
 
     useEffect(() => {

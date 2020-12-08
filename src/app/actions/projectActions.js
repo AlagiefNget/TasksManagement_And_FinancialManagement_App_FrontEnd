@@ -1,4 +1,4 @@
-import {EDIT_PROJECT, FETCH_PROJECTS, NEW_PROJECT, DELETE_PROJECT, COMPLETE_PROJECT, TILES_DATA} from './types';
+import {EDIT_PROJECT, FETCH_PROJECTS, NEW_PROJECT, DELETE_PROJECT, COMPLETE_PROJECT, TILES_DATA, GET_PROJECT} from './types';
 import $ from "jquery";
 import cookies from 'react-cookies';
 
@@ -101,14 +101,31 @@ export const completeProject = (id, callback) => dispatch => {
     })
 };
 
-export const getTilesData = (callback) => dispatch => {
+export const getTilesData = () => dispatch => {
     $.ajax({
         method: 'GET',
         url: 'http://localhost:3000/api/v1/projects/get_tiles_data',
         headers: {"Authorization": "Bearer " +  cookies.load("token")},
-        success: function (result) {;
+        success: function (result) {
             dispatch({
                 type: TILES_DATA,
+                payload: result.data
+            })
+        },
+        error:function (e) {
+
+        }
+    })
+};
+
+export const getProject = (id) => dispatch => {
+    $.ajax({
+        method: 'GET',
+        url: 'http://localhost:3000/api/v1/projects/'+id,
+        headers: {"Authorization": "Bearer " +  cookies.load("token")},
+        success: function (result) {
+            dispatch({
+                type: GET_PROJECT,
                 payload: result.data
             })
         },

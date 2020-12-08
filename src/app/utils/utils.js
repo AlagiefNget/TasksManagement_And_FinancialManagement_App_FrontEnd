@@ -118,5 +118,4 @@ export default class Utils {
         return event.toLocaleDateString(lang, opts);
     };
 
-
 }

@@ -40,11 +40,16 @@ const Details = (props) => {
         }
     }, [props.client]);
 
+    const goBack = () => {
+        props.history.goBack();
+    };
+
     return client && (
         <div>
             <div>
-                <Button style={{float: 'right'}} variant="contained" color="secondary"
-                        onClick={() => props.history.goBack()}>Back</Button>
+                <Button style={{float: 'right', marginBottom:7}} variant="contained" color="secondary"
+                        onClick={goBack}>Back
+                </Button>
             </div>
             <div>
                 <TableContainer component={Paper}>

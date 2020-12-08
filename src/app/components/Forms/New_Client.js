@@ -57,7 +57,7 @@ const ClientForm = (props) => {
         let name = e.target.name;
         let val = e.target.value;
         if (name === 'phone_number' && Utils.isValid(val)) {
-            Utils.displayMessage("warning", "", "Only numbers allowed");
+            Utils.displayMessage("warning", "", "Only numbers allowed").then(r => r);
             return;
         }
         _client[name] = val;
@@ -81,7 +81,7 @@ const ClientForm = (props) => {
     };
 
     const setFocus = (field_id) => {
-        Utils.displayMessage('error', 'Error', 'Please specify ' + field_id);
+        Utils.displayMessage('error', 'Error', 'Please specify ' + field_id).then(r => r);
         document.getElementById(field_id).focus();
     };
 

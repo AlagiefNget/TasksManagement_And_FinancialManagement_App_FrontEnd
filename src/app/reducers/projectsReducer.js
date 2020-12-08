@@ -1,4 +1,4 @@
-import { FETCH_PROJECTS, NEW_PROJECT, EDIT_PROJECT, DELETE_PROJECT, COMPLETE_PROJECT, TILES_DATA } from '../actions/types';
+import { FETCH_PROJECTS, NEW_PROJECT, EDIT_PROJECT, DELETE_PROJECT, COMPLETE_PROJECT, TILES_DATA, GET_PROJECT } from '../actions/types';
 
 const initialState = {
     items: [],
@@ -56,6 +56,11 @@ const ProjectsReducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 tilesData: payload
+            };
+        case GET_PROJECT:
+            return {
+                ...state,
+                item: payload
             };
         default: return state;
     }

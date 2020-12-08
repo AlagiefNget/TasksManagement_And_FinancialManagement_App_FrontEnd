@@ -8,9 +8,6 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
   },
-  // menuButton: {
-  //   marginRight: theme.spacing(2),
-  // },
   title: {
     display: 'none',
     [theme.breakpoints.up('sm')]: {
@@ -49,9 +46,6 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: theme.spacing(3),
       width: 'auto',
     },
-  },
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
