@@ -4,6 +4,10 @@ import MoneyOffIcon from '@material-ui/icons/MoneyOff';
 import WorkIcon from '@material-ui/icons/Work';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+<<<<<<< HEAD
+=======
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+>>>>>>> Recovered ammp and added income and expense routes
 
 import Dashboard from '../containers/Dashboard/Dashboard';
 import Settings from '../containers/Settings/Settings';
@@ -39,8 +43,19 @@ const sidebarRoutes = [
         component: Clients
     },
     {
+<<<<<<< HEAD
         name: 'Expense Manager',
         path: '/expense-tracker',
+=======
+        name: 'Expenses',
+        path: '/expense-manager',
+        icon: AccountBalanceWalletIcon,
+        component: ExpenseTracker
+    },
+    {
+        name: 'Income',
+        path: '/income-manager',
+>>>>>>> Recovered ammp and added income and expense routes
         icon: MoneyOffIcon,
         component: ExpenseTracker
     },
